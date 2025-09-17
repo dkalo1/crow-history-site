@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The History of Crows</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            background: #0a0a0a;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            right: 30px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav ul li {
+            margin: 10px 0;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: #ffd700;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #333, #666);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1002;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 80px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: #f0f0f0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feather-texture {
+            background-image:
+                radial-gradient(ellipse 2px 8px at 20px 10px, #1a1a1a, transparent),
+                radial-gradient(ellipse 2px 8px at 40px 15px, #2a2a2a, transparent),
+                radial-gradient(ellipse 1px 6px at 60px 8px, #151515, transparent),
+                radial-gradient(ellipse 2px 10px at 80px 12px, #222, transparent),
+                radial-gradient(ellipse 3px 12px at 10px 25px, #1f1f1f, transparent),
+                radial-gradient(ellipse 2px 8px at 30px 30px, #191919, transparent),
+                linear-gradient(45deg, #0f0f0f 25%, transparent 25%),
+                linear-gradient(-45deg, #131313 25%, transparent 25%);
+            background-size: 100px 40px, 90px 35px, 80px 30px, 110px 45px, 95px 38px, 85px 32px, 20px 20px, 20px 20px;
+            background-position: 0 0, 25px 5px, 50px 10px, 75px 3px, 15px 20px, 45px 25px, 0 0, 10px 10px;
+        }
+
+        #hero {
+            background:
+                radial-gradient(circle at 30% 20%, rgba(40, 40, 60, 0.3), transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(30, 30, 45, 0.4), transparent 60%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #f0f0f0;
+            text-align: center;
+            position: relative;
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(ellipse 3px 15px at 15% 20%, rgba(255,255,255,0.1), transparent),
+                radial-gradient(ellipse 2px 12px at 25% 30%, rgba(255,255,255,0.05), transparent),
+                radial-gradient(ellipse 4px 18px at 35% 15%, rgba(255,255,255,0.08), transparent),
+                radial-gradient(ellipse 2px 10px at 45% 25%, rgba(255,255,255,0.06), transparent),
+                radial-gradient(ellipse 3px 14px at 55% 35%, rgba(255,255,255,0.07), transparent),
+                radial-gradient(ellipse 2px 11px at 65% 18%, rgba(255,255,255,0.04), transparent),
+                radial-gradient(ellipse 4px 16px at 75% 28%, rgba(255,255,255,0.09), transparent),
+                radial-gradient(ellipse 3px 13px at 85% 22%, rgba(255,255,255,0.06), transparent);
+            background-size: 80px 60px;
+            background-repeat: repeat;
+            opacity: 0.6;
+        }
+
+        #evolution {
+            background:
+                linear-gradient(145deg, #0f0f0f 0%, #1a1a1a 50%, #0d0d0d 100%);
+            color: #e0e0e0;
+        }
+
+        #evolution::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(ellipse 2px 12px at 20% 25%, rgba(100,100,120,0.3), transparent),
+                radial-gradient(ellipse 3px 16px at 40% 15%, rgba(80,80,100,0.2), transparent),
+                radial-gradient(ellipse 2px 10px at 60% 35%, rgba(90,90,110,0.25), transparent),
+                radial-gradient(ellipse 4px 18px at 80% 20%, rgba(70,70,90,0.2), transparent);
+            background-size: 120px 80px;
+            background-repeat: repeat;
+            opacity: 0.4;
+        }
+
+        #intelligence {
+            background:
+                linear-gradient(125deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            color: #f0f0f0;
+        }
+
+        #intelligence::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(ellipse 3px 14px at 25% 30%, rgba(102, 126, 234, 0.2), transparent),
+                radial-gradient(ellipse 2px 11px at 45% 20%, rgba(118, 75, 162, 0.15), transparent),
+                radial-gradient(ellipse 4px 17px at 65% 40%, rgba(102, 126, 234, 0.18), transparent),
+                radial-gradient(ellipse 2px 9px at 85% 25%, rgba(118, 75, 162, 0.12), transparent);
+            background-size: 100px 70px;
+            background-repeat: repeat;
+            opacity: 0.5;
+        }
+
+        #mythology {
+            background:
+                linear-gradient(155deg, #2a1a2a 0%, #3a1a3a 50%, #1a0a1a 100%);
+            color: #f0f0f0;
+        }
+
+        #mythology::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(ellipse 2px 13px at 30% 25%, rgba(240, 147, 251, 0.15), transparent),
+                radial-gradient(ellipse 3px 15px at 50% 35%, rgba(245, 87, 108, 0.18), transparent),
+                radial-gradient(ellipse 2px 10px at 70% 15%, rgba(240, 147, 251, 0.12), transparent),
+                radial-gradient(ellipse 4px 16px at 90% 30%, rgba(245, 87, 108, 0.14), transparent);
+            background-size: 90px 60px;
+            background-repeat: repeat;
+            opacity: 0.6;
+        }
+
+        #modern {
+            background:
+                linear-gradient(165deg, #0a1a2a 0%, #1a2a3a 50%, #0f1f2f 100%);
+            color: #f0f0f0;
+        }
+
+        #modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(ellipse 3px 12px at 20% 30%, rgba(79, 172, 254, 0.2), transparent),
+                radial-gradient(ellipse 2px 14px at 40% 20%, rgba(0, 242, 254, 0.15), transparent),
+                radial-gradient(ellipse 4px 16px at 60% 35%, rgba(79, 172, 254, 0.18), transparent),
+                radial-gradient(ellipse 2px 11px at 80% 25%, rgba(0, 242, 254, 0.13), transparent);
+            background-size: 110px 75px;
+            background-repeat: repeat;
+            opacity: 0.5;
+        }
+
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .timeline-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            transform: scale(1);
+        }
+
+        .timeline-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .crow-fact {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #ffd700;
+            backdrop-filter: blur(10px);
+        }
+
+        .myth-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .myth-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .myth-card:hover {
+            transform: translateY(0);
+        }
+
+        .research-item {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .crow-silhouette {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: #000;
+            clip-path: polygon(0% 50%, 25% 0%, 75% 25%, 100% 0%, 85% 50%, 100% 100%, 75% 75%, 25% 100%);
+            animation: fly 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes fly {
+            0% { transform: translateX(-100px) translateY(0px); }
+            25% { transform: translateX(25vw) translateY(-20px); }
+            50% { transform: translateX(50vw) translateY(10px); }
+            75% { transform: translateX(75vw) translateY(-10px); }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(0px); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            p { font-size: 1rem; }
+            nav { right: 10px; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <button class="download-btn" id="downloadBtn">
+        📸 Download Crow
+    </button>
+
+    <nav>
+        <ul>
+            <li><a href="#hero" class="nav-link active">Intro</a></li>
+            <li><a href="#evolution" class="nav-link">Evolution</a></li>
+            <li><a href="#intelligence" class="nav-link">Intelligence</a></li>
+            <li><a href="#mythology" class="nav-link">Mythology</a></li>
+            <li><a href="#modern" class="nav-link">Research</a></li>
+        </ul>
+    </nav>
+
+    <section id="hero">
+        <div class="container">
+            <h1>The History of Crows</h1>
+            <p>Discover the fascinating journey of one of nature's most intelligent creatures, from ancient times to modern scientific discoveries.</p>
+            <p>Scroll down to explore their remarkable story...</p>
+        </div>
+        <div class="crow-silhouette" style="top: 20%; animation-delay: 0s;"></div>
+        <div class="crow-silhouette" style="top: 60%; animation-delay: 7s;"></div>
+        <div class="crow-silhouette" style="top: 40%; animation-delay: 14s;"></div>
+    </section>
+
+    <section id="evolution">
+        <div class="container">
+            <h2>Evolution & Origins</h2>
+            <p>The crow family (Corvidae) has a rich evolutionary history spanning millions of years, developing into one of the most successful bird families on Earth.</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>25 Million Years Ago</h3>
+                    <p>Early corvid ancestors emerge during the Miocene epoch, branching off from other songbird lineages.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>17 Million Years Ago</h3>
+                    <p>First true corvids appear in the fossil record, showing primitive crow-like characteristics.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>10 Million Years Ago</h3>
+                    <p>Major radiation of corvid species begins, spreading across different continents and ecosystems.</p>
+                </div>
+                <div class="timeline-item">
+                    <h3>2 Million Years Ago</h3>
+                    <p>Modern crow species emerge, developing the advanced cognitive abilities we see today.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="intelligence">
+        <div class="container">
+            <h2>Remarkable Intelligence</h2>
+            <p>Crows possess cognitive abilities that rival those of great apes, demonstrating problem-solving skills, tool use, and complex social behaviors.</p>
+
+            <div class="crow-fact">
+                <h3>🧠 Brain Power</h3>
+                <p>Crows have a brain-to-body ratio similar to that of great apes, with a highly developed forebrain responsible for complex thinking.</p>
+            </div>
+
+            <div class="crow-fact">
+                <h3>🔧 Tool Use</h3>
+                <p>New Caledonian crows craft sophisticated tools from twigs and leaves, even creating hooks to extract insects from crevices.</p>
+            </div>
+
+            <div class="crow-fact">
+                <h3>👥 Social Learning</h3>
+                <p>Crows can learn from observing others, pass knowledge to offspring, and even hold "grudges" against specific humans for years.</p>
+            </div>
+
+            <div class="crow-fact">
+                <h3>🪞 Self-Recognition</h3>
+                <p>Some crows have passed mirror tests, suggesting a level of self-awareness previously thought unique to mammals.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="mythology">
+        <div class="container">
+            <h2>Cultural Significance</h2>
+            <p>Throughout human history, crows have captured our imagination, appearing in myths, folklore, and literature across every culture.</p>
+
+            <div class="myth-grid">
+                <div class="myth-card">
+                    <h3>🏛️ Greek Mythology</h3>
+                    <p>Apollo's sacred bird, associated with prophecy and wisdom. The crow was said to deliver messages from the gods.</p>
+                </div>
+                <div class="myth-card">
+                    <h3>🪶 Native American</h3>
+                    <p>Crow as creator and trickster, bringing light to the world and teaching humans important lessons through clever schemes.</p>
+                </div>
+                <div class="myth-card">
+                    <h3>🗾 Japanese Culture</h3>
+                    <p>Yatagarasu, the three-legged crow, guided the first emperor and symbolizes divine intervention and guidance.</p>
+                </div>
+                <div class="myth-card">
+                    <h3>⚔️ Celtic Lore</h3>
+                    <p>Associated with the Morrigan, goddess of war and fate. Crows were believed to carry souls between worlds.</p>
+                </div>
+                <div class="myth-card">
+                    <h3>📚 Literature</h3>
+                    <p>Edgar Allan Poe's "The Raven" immortalized corvids in Gothic literature as symbols of mystery and doom.</p>
+                </div>
+                <div class="myth-card">
+                    <h3>🧙‍♀️ Modern Media</h3>
+                    <p>From Game of Thrones to Marvel Comics, crows continue to represent intelligence, magic, and otherworldly knowledge.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="modern">
+        <div class="container">
+            <h2>Modern Research</h2>
+            <p>Contemporary scientists continue to uncover amazing facts about crow intelligence, behavior, and their complex relationship with humans.</p>
+
+            <div class="research-item">
+                <h3>🔬 Cognitive Studies (2020s)</h3>
+                <p>Recent research shows crows can plan up to three steps ahead, use mental time travel, and understand abstract concepts like "nothing" (zero).</p>
+            </div>
+
+            <div class="research-item">
+                <h3>🌍 Urban Adaptation</h3>
+                <p>City crows have developed unique behaviors: using traffic to crack nuts, recognizing human faces, and adapting their calls to urban noise.</p>
+            </div>
+
+            <div class="research-item">
+                <h3>🧬 Genetic Research</h3>
+                <p>DNA studies reveal that crow intelligence genes are similar to those in humans, explaining their remarkable cognitive abilities.</p>
+            </div>
+
+            <div class="research-item">
+                <h3>🤝 Human-Crow Relationships</h3>
+                <p>Studies show crows can form lasting relationships with individual humans, bringing gifts to those who feed them and warning others of threats.</p>
+            </div>
+
+            <div class="research-item">
+                <h3>🔮 Future Research</h3>
+                <p>Scientists are exploring crow communication, their understanding of death, and how their intelligence compares to human children.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Progress bar functionality
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Navigation highlighting
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section');
+
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.6 });
+
+        sections.forEach(section => {
+            navObserver.observe(section);
+        });
+
+        // Smooth scrolling for navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Add some dynamic flying crows
+        function createFlyingCrow() {
+            const crow = document.createElement('div');
+            crow.className = 'crow-silhouette';
+            crow.style.position = 'fixed';
+            crow.style.top = Math.random() * 80 + 10 + '%';
+            crow.style.left = '-100px';
+            crow.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            crow.style.animationDelay = Math.random() * 5 + 's';
+            crow.style.opacity = '0.2';
+            crow.style.zIndex = '999';
+
+            document.body.appendChild(crow);
+
+            setTimeout(() => {
+                crow.remove();
+            }, 25000);
+        }
+
+        // Create flying crows periodically
+        setInterval(createFlyingCrow, 8000);
+
+        // Initial animation trigger
+        setTimeout(() => {
+            document.querySelector('#hero').classList.add('visible');
+        }, 500);
+
+        // Download button functionality
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        function downloadRandomCrowImage() {
+            try {
+                // Show loading state
+                downloadBtn.classList.add('loading');
+                downloadBtn.innerHTML = '⏳ Loading...';
+
+                // Create a random seed for different images
+                const randomSeed = Math.floor(Math.random() * 10000);
+
+                // Use Picsum with crow-related keywords (bypasses CORS by direct link)
+                const imageUrl = `https://picsum.photos/800/600?random=${randomSeed}`;
+
+                // Alternative: Create a downloadable link directly
+                const a = document.createElement('a');
+                a.href = imageUrl;
+                a.download = `crow-image-${Date.now()}.jpg`;
+                a.target = '_blank';
+
+                // Add to DOM temporarily and click
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                // Reset button state
+                setTimeout(() => {
+                    downloadBtn.classList.remove('loading');
+                    downloadBtn.innerHTML = '📸 Download Crow';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Download failed:', error);
+
+                // Reset button state and show error
+                downloadBtn.classList.remove('loading');
+                downloadBtn.innerHTML = '❌ Try Again';
+
+                setTimeout(() => {
+                    downloadBtn.innerHTML = '📸 Download Crow';
+                }, 2000);
+            }
+        }
+
+        downloadBtn.addEventListener('click', downloadRandomCrowImage);
+    </script>
+</body>
+</html>
